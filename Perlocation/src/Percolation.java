@@ -12,9 +12,11 @@ public class Percolation {
     private final int endIndex;
     private final boolean[] openSites;
 
-    public Percolation(int n) { // create n-by-n grid, with all sites blocked
-        if (n <= 0){
-            throw new IllegalArgumentException("Size of the percolation should be positive");
+    // create n-by-n grid, with all sites blocked
+    public Percolation(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException(
+                    "Size of the percolation should be positive");
         }
         size = n;
         int flattenSize = n * n + 2; // Flatten array with 2 virtual start and end.
@@ -28,12 +30,13 @@ public class Percolation {
         openSites[endIndex] = true;
     }
 
-    public void open(int row, int col){ // open site (row, col) if it is not open already
+    // open site (row, col) if it is not open already
+    public void open(int row, int col) {
         validateRowAndCol(row, col);
 
         int index = getFlattenIndex(row, col);
 
-        if (!openSites[index]){
+        if (!openSites[index]) {
             openSites[index] = true;
 
             int[] neighbors = getNeighborsIndexes(row, col, index);
@@ -46,20 +49,24 @@ public class Percolation {
         }
     }
 
-    public boolean isOpen(int row, int col){ // is site (row, col) open?
+    // is site (row, col) open?
+    public boolean isOpen(int row, int col) {
         validateRowAndCol(row, col);
 
         int index = getFlattenIndex(row, col);
         return openSites[index];
     }
 
-    public boolean isFull(int row, int col){ // is site (row, col) full?
+    // is site (row, col) full?
+    public boolean isFull(int row, int col) {
         validateRowAndCol(row, col);
         int index = getFlattenIndex(row, col);
         return uf.connected(startIndex, index);
     }
 
-    public boolean percolates(){ // does the system percolate?
+    // does the system percolate?
+    public boolean percolates() {
+
         return uf.connected(startIndex, endIndex);
     }
 
@@ -69,8 +76,11 @@ public class Percolation {
     }
 
     private void validateDimension(int value, String dimensionName) {
-        if (value < 1 || value > size){
-            throw new IndexOutOfBoundsException(String.format("%1s parameter is not in range 1..%2d", dimensionName, size));
+        if (value < 1 || value > size) {
+            throw new IndexOutOfBoundsException(
+                String.format(
+                        "%1s parameter is not in range 1..%2d",
+                        dimensionName, size));
         }
     }
 
@@ -79,28 +89,29 @@ public class Percolation {
     }
 
     private int[] getNeighborsIndexes(int row, int col, int index) {
-        int[] possibleNeighbors = new int[]{-1,-1,-1,-1}; // just to avoid boxing/unboxing
+        // just to avoid boxing/unboxing
+        int[] possibleNeighbors = new int[]{-1, -1, -1, -1};
         int count = 2;
 
         if (row == 1) {
             possibleNeighbors[0] = startIndex;
         }
-        else{
+        else {
             possibleNeighbors[0] = index - size;
         }
 
         if (row == size) {
             possibleNeighbors[1] = endIndex;
         }
-        else{
+        else {
             possibleNeighbors[1] = index + size;
         }
 
-        if (col != 1){
+        if (col != 1) {
             possibleNeighbors[2] = index - 1;
             count++;
         }
-        if (col != size){
+        if (col != size) {
             possibleNeighbors[3] = index + 1;
             count++;
         }
@@ -108,14 +119,14 @@ public class Percolation {
         int[] result = new int[count];
         int i = 0;
         for (int ind : possibleNeighbors) {
-            if (ind != -1){
+            if (ind != -1) {
                 result[i++] = ind;
             }
         }
         return result;
     }
 
-    public static void main(String[] args){ // test client (optional)
+    public static void main(String[] args) { // test client (optional)
 //        Percolation perc = new Percolation(0);
 //        Percolation perc = new Percolation(10);
 //        perc.open(10,11);
