@@ -32,13 +32,16 @@ public class Percolation {
         validateRowAndCol(row, col);
 
         int index = getFlattenIndex(row, col);
-        openSites[index] = true;
 
-        int[] neighbors = getNeighborsIndexes(row, col, index);
+        if (!openSites[index]){
+            openSites[index] = true;
 
-        for (int neighbor : neighbors) {
-            if (openSites[neighbor]){
-                uf.union(index, neighbor);
+            int[] neighbors = getNeighborsIndexes(row, col, index);
+
+            for (int neighbor : neighbors) {
+                if (openSites[neighbor]) {
+                    uf.union(index, neighbor);
+                }
             }
         }
     }
