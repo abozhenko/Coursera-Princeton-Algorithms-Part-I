@@ -7,7 +7,13 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
 
     private final int size;
-    private final WeightedQuickUnionUF uf;
+    // logical uf, correct fore determining percolation, but has drawback that liquid
+    // goes up
+    private final WeightedQuickUnionUF logicalUF;
+    // is suitable for visualisation as liquid goes only down, but is not appropriate
+    // for verification whether system percolates or not as it doe
+    // not contain virtual end.
+    private final WeightedQuickUnionUF liquidUF;
     private final int startIndex;
     private final int endIndex;
     private final boolean[] openSites;
@@ -22,7 +28,8 @@ public class Percolation {
         int flattenSize = n * n + 2; // Flatten array with 2 virtual start and end.
         openSites = new boolean[flattenSize];
 
-        uf = new WeightedQuickUnionUF(flattenSize);
+        logicalUF = new WeightedQuickUnionUF(flattenSize);
+        liquidUF = new WeightedQuickUnionUF(flattenSize -1);
         startIndex = n*n;
         endIndex = n*n + 1;
 
@@ -43,7 +50,11 @@ public class Percolation {
 
             for (int neighbor : neighbors) {
                 if (openSites[neighbor]) {
-                    uf.union(index, neighbor);
+                    logicalUF.union(index, neighbor);
+                    // avoid virtual end for liquid like union find
+                    if (neighbor != endIndex) {
+                        liquidUF.union(index, neighbor);
+                    }
                 }
             }
         }
@@ -61,13 +72,13 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validateRowAndCol(row, col);
         int index = getFlattenIndex(row, col);
-        return uf.connected(startIndex, index);
+        return liquidUF.connected(startIndex, index);
     }
 
     // does the system percolate?
     public boolean percolates() {
 
-        return uf.connected(startIndex, endIndex);
+        return logicalUF.connected(startIndex, endIndex);
     }
 
     private void validateRowAndCol(int row, int col) {
